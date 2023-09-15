@@ -1,5 +1,5 @@
 {
-  "name": "platzi-intro-react-base",
+  "name": "Todo-React",
   "version": "0.1.0",
   "dependencies": {
     "@fortawesome/react-fontawesome": "^0.2.0",

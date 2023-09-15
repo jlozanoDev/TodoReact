@@ -1,47 +1,68 @@
-
+import React from 'react';
 import './index.css';
 import { TodoCounter } from './TodoCounter';
 import { TodoSearch } from './TodoSearch';
 import { TodoList} from './TodoList';
 import { TodoItem } from './TodoItem';
 import { CreateTodoButton } from './CreateTodoButton';
-
-
-import React from 'react';
-const defaultTodos = [
-  {id: '1', text: 'Cortar cebolla', completed: true},
-  {id: '2', text: 'Cortar cebolla1', completed: false},
-  {id: '3', text: 'Cortar cebolla2', completed: false},
-  {id: '4', text: 'Cortar cebolla3', completed: true},
-  {id: '5', text: 'Cortar cebolla4', completed: false},
-  {id: '6', text: 'Curso de react', completed: true}
-];
+import { UseLocalStorage } from './LocalStorage';
 
 function App() {
   const [searchValue, setSearchValue] = React.useState('');
-  const [todos] = React.useState(defaultTodos);
-  const completedTodos = todos.filter(todo=>!!todo.completed).length;
-  const totalTodos= todos.length;
-  const searchedTodo= todos.filter((todo) => {
+  const [todos, saveTodos] = UseLocalStorage('TODOS_V1', []);
+  const completedTodos = (todos)?todos.filter(todo=>!!todo.completed).length:0;
+  const totalTodos= (todos)?todos.length:0;
+  const searchedTodo= (todos)?todos.filter((todo) => {
     return todo.text.toLocaleLowerCase().includes(searchValue.toLocaleLowerCase())
-  });
+  }):null;
+
+  const completeTodo = (id) =>{
+    const newTodos = [...todos];
+    const todoIndex = newTodos.findIndex(
+      (todo) => todo.id === id
+    )
+    newTodos[todoIndex].completed = true;
+    saveTodos(newTodos);
+  };
+  const deleteTodo = (id) =>{
+    const newTodos = [...todos];
+    const todoIndex = newTodos.findIndex(
+      (todo) => todo.id === id
+    )
+    newTodos.splice(todoIndex, 1);
+    saveTodos(newTodos);
+  };
   return (
     <>
       <div className='content'>
         <div className='column column1'>
           <br></br>
           <CreateTodoButton/>
+          <br></br>
         </div>
         <div className='column'>
           <TodoCounter total={totalTodos} completed={completedTodos}/>
-          <TodoSearch
-            searchValue = {searchValue}
-            setSearchValue = {setSearchValue}
-          />
+          {(searchedTodo)?
+            <TodoSearch
+              searchValue = {searchValue}
+              setSearchValue = {setSearchValue}
+            />:''            
+          }
           <TodoList>
-            {searchedTodo.map( todo => (
-              <TodoItem key={todo.id} text={todo.text} completed={todo.completed}/>
-            ))}
+            {(searchedTodo)?searchedTodo.map( todo => (
+              <TodoItem 
+                key={todo.id} 
+                text={todo.text} 
+                completed={todo.completed}
+                onComplete={()=>{
+                  completeTodo(todo.id)
+                }}
+
+                onDelete={()=>{
+                  deleteTodo(todo.id)
+                }
+                } />
+            )):''}
           </TodoList>
           
         </div>
