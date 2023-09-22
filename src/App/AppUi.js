@@ -1,3 +1,4 @@
+import React from 'react';
 import { TodoCounter } from '../TodoCounter';
 import { TodoSearch } from '../TodoSearch';
 import { TodoList } from '../TodoList';
@@ -10,45 +11,40 @@ import './index.css';
 import { TodoContext } from '../TodoContext';
 
 function AppUI() {
+    const {
+        loading,
+        error,  
+        searchedTodo,
+        completeTodo,
+        deleteTodo
+    } = React.useContext(TodoContext);
   return (
     <>
-        <TodoContext.Consumer>
-            {({
-                loading,
-                error,  
-                searchedTodo,
-                completeTodo,
-                deleteTodo
-            })=>(
+        <div className='content'>
+            <div className='column column1'>
+                <CreateTodoButton/>
+                <br></br>
+            </div>
+            <div className='column'>
+                <TodoCounter/>
+                <TodoSearch/>
+                <TodoList>
+                    {loading && <TodosLoading></TodosLoading>}
+                    {error && <TodosError></TodosError>}
+                    {(!error && !loading && searchedTodo.length === 0) && <EmptyTodo/>}
 
-            
-                <div className='content'>
-                    <div className='column column1'>
-                        <CreateTodoButton/>
-                        <br></br>
-                    </div>
-                    <div className='column'>
-                        <TodoCounter/>
-                        <TodoSearch/>
-                        <TodoList>
-                            {loading && <TodosLoading></TodosLoading>}
-                            {error && <TodosError></TodosError>}
-                            {(!error && !loading && searchedTodo.length === 0) && <EmptyTodo/>}
-
-                            {searchedTodo.map(todo => (
-                            <TodoItem
-                                key={todo.id}
-                                text={todo.text}
-                                completed={todo.completed}
-                                onComplete={() => completeTodo(todo.id)}
-                                onDelete={() => deleteTodo(todo.id)}
-                            />
-                            ))}
-                        </TodoList>
-                    </div>
-                </div>
-            )}
-        </TodoContext.Consumer>
+                    {searchedTodo.map(todo => (
+                    <TodoItem
+                        key={todo.id}
+                        text={todo.text}
+                        completed={todo.completed}
+                        onComplete={() => completeTodo(todo.id)}
+                        onDelete={() => deleteTodo(todo.id)}
+                    />
+                    ))}
+                </TodoList>
+            </div>
+        </div>    
     </>
   );
 }
