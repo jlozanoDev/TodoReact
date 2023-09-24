@@ -15,6 +15,10 @@ function TodoProvider({children}){
     const searchedTodo= (todos)?todos.filter((todo) => {
       return todo.text.toLocaleLowerCase().includes(searchValue.toLocaleLowerCase())
     }):null;
+
+    const [openModal, setOpenModal] = React.useState(false);
+
+    const [deleteTodoId, setDeleteTodoId] = React.useState(null);
   
     const completeTodo = (id) =>{
       const newTodos = [...todos];
@@ -25,14 +29,27 @@ function TodoProvider({children}){
       saveTodos(newTodos);
     };
     const deleteTodo = (id) =>{
+      setDeleteTodoId(id);
+      setOpenModal(!openModal);
+    };
+    const addTodo = (text) =>{
       const newTodos = [...todos];
-      const todoIndex = newTodos.findIndex(
-        (todo) => todo.id === id
-      )
-      newTodos.splice(todoIndex, 1);
+      let nextId = 1;
+      if (newTodos.length>0){
+        nextId = newTodos.map((item) => item.id).reduce((acc, item) => {
+          return Math.max(acc, item);
+        }, 0) + 1;
+      }
+      newTodos.push({
+        id: nextId,
+        text,
+        completed:false
+      })
+      
       saveTodos(newTodos);
     };
     return (<TodoContext.Provider value={{
+        todos,
         loading,
         error,  
         completedTodos,
@@ -41,7 +58,13 @@ function TodoProvider({children}){
         setSearchValue,
         searchedTodo,
         completeTodo,
-        deleteTodo
+        deleteTodo,
+        openModal,
+        setOpenModal,
+        deleteTodoId, 
+        setDeleteTodoId,
+        saveTodos,
+        addTodo
     }}>
         {children}
     </TodoContext.Provider>);

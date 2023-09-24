@@ -8,7 +8,9 @@ import { TodosLoading } from '../TodosLoading';
 import { TodosError } from '../TodosError';
 import { EmptyTodo } from '../EmptyTodo';
 import './index.css';
+import { Modal } from '../Modal';
 import { TodoContext } from '../TodoContext';
+import { TodoFormDelete} from '../TodoFormDelete';
 
 function AppUI() {
     const {
@@ -16,13 +18,18 @@ function AppUI() {
         error,  
         searchedTodo,
         completeTodo,
-        deleteTodo
+        deleteTodo,
+        openModal,
+        setOpenModal
     } = React.useContext(TodoContext);
   return (
     <>
         <div className='content'>
             <div className='column column1'>
-                <CreateTodoButton/>
+                <CreateTodoButton />
+                {openModal && (<Modal>
+                    <TodoFormDelete></TodoFormDelete>
+                </Modal>)}
                 <br></br>
             </div>
             <div className='column'>
